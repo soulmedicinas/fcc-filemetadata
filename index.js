@@ -27,7 +27,7 @@ app.post('/upload', upload.single('upfile'), (req, res) => {
   if (!req.file) {
     return res.status(400).send({ error: 'No file uploaded' });
   }
-  
+
   const fileMetadata = {
     name: req.file.originalname,
     type: req.file.mimetype,
