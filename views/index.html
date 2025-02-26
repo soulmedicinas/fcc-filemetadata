@@ -1,34 +1,44 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Metadata Microservice</title>
+</head>
+<body>
+  <h1>Upload a File</h1>
+  <form action="/upload" method="POST" enctype="multipart/form-data">
+    <label for="upfile">Choose a file:</label>
+    <input type="file" name="upfile" id="upfile" required>
+    <button type="submit">Upload File</button>
+  </form>
 
-<html>
-   <head>
-      <title>File Metadata</title>
-      <link rel="shortcut icon" href="https://cdn.freecodecamp.org/universal/favicons/favicon-32x32.png" type="image/x-icon"/>
-      <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
-      <link href="/public/style.css" rel="stylesheet" type="text/css">
-   </head>
+  <div id="result"></div>
 
-   <body>
-      <div class="container">
-        <h1>API Project: File Metadata Microservice</h1>
+  <script>
+    // Handle form submission and show metadata in the result div
+    document.querySelector('form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
 
-        <h2>Usage:</h2>
-        <p>
-          Please Upload a File ...
-        </p>
-        <div class="view">
-          <h3 id="output"></h3>
-          <form enctype="multipart/form-data" method="POST" action="/api/fileanalyse">
-            <input id="inputfield" type="file" name="upfile">
-            <input id="button" type="submit" value="Upload">
-          </form>
-        </div>
-      </div>
-      <div class="footer">
-        <p>
-          by 
-          <a href="http://www.freecodecamp.com">freeCodeCamp</a>
-        </p>
-      </div>
-   </body>
+      if (response.ok) {
+        const data = await response.json();
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `
+          <h3>File Metadata:</h3>
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>Type:</strong> ${data.type}</p>
+          <p><strong>Size:</strong> ${data.size} bytes</p>
+        `;
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'An error occurred');
+      }
+    });
+  </script>
+</body>
 </html>
