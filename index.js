@@ -1,43 +1,37 @@
+// server.js
 const express = require('express');
+const cors = require('cors');
 const multer = require('multer');
-const path = require('path');
 
-// Initialize Express
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
-// Set up storage for multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Store files in the 'uploads' folder
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
-  }
-});
-
-// Set up multer for file upload handling
-const upload = multer({ storage: storage });
-
-// Serve static files (for the HTML form)
+// Middleware
+app.use(cors());
 app.use(express.static('public'));
 
-// Route to handle file upload
-app.post('/upload', upload.single('upfile'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).send({ error: 'No file uploaded' });
-  }
+// Configure multer for file uploads
+const upload = multer({ dest: 'uploads/' });
 
-  const fileMetadata = {
-    name: req.file.originalname,
-    type: req.file.mimetype,
-    size: req.file.size
-  };
-
-  res.json(fileMetadata); // Send back the file metadata as JSON
+// HTML form for file upload
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
 });
 
-// Start server
+// Handle file upload
+app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  res.json({
+    name: req.file.originalname,
+    type: req.file.mimetype,
+    size: req.file.size,
+  });
+});
+
+// Start the server
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`File Metadata Microservice listening at http://localhost:${port}`);
 });
