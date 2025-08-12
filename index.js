@@ -10,6 +10,19 @@ mongoose.connect(process.env.MONGO_URI, { useNewParser: true, useUnifiedTopology
 .then(() => console.log("MongoDB connected"))
 .catch(err => console.error(err));
 
+const fileSchema = new mongoose.Schema({
+  name: String,
+    type: String,
+    size: Number,
+    uploadedAt: { type: Date, default: Date.now }
+  });
+
+module.exports = mongoose.model('File', fileSchema);
+
+app.use(cors());
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+
 const multer = require('multer');
 
 // Configure multer storage (store in memory or disk):
@@ -24,30 +37,6 @@ app.get('/', function (req, res) {
 });
 
 // Create a POST route to handle file upload:
-app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-
-  // Respond with file metadata: 
-  res.json({
-    name: req.file.originalname,
-    type: req.file.mimetype,
-    size: req.file.size
-  });
-});
-
-// define a Mongoose schema to save a metadata file in the Atlas:
-const fileSchema = new mongoose.Schema({
-  name: String,
-  type: String,
-  size: Number,
-  uploadedAt: { type: Date, default: Date.now }
-});
-
-module.exports = mongoose.model('File', fileSchema);
-
-const File = require('./models/File'); // adjust path as needed
-
-// update upload route:
 app.post('/api/fileanalyse', upload.single('upfile'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
