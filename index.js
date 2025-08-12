@@ -6,12 +6,11 @@ var app = express();
 
 // connect to MongoDB:
 const mongoose = require('mongoose');
-mongoose.connect(process.env.MONGO_URI, { useNewParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(() => console.log("MongoDB connected"))
 .catch(err => console.error(err));
 
-const File = mongoose.model('File', fileSchema);
-
+//Define schema and model:
 const fileSchema = new mongoose.Schema({
   name: String,
     type: String,
@@ -19,7 +18,7 @@ const fileSchema = new mongoose.Schema({
     uploadedAt: { type: Date, default: Date.now }
   });
 
-module.exports = mongoose.model('File', fileSchema);
+const File = mongoose.model('File', fileSchema);
 
 app.use(cors());
 app.use(express.static('public'));
