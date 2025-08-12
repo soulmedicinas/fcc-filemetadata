@@ -10,6 +10,8 @@ mongoose.connect(process.env.MONGO_URI, { useNewParser: true, useUnifiedTopology
 .then(() => console.log("MongoDB connected"))
 .catch(err => console.error(err));
 
+const File = mongoose.model('File', fileSchema);
+
 const fileSchema = new mongoose.Schema({
   name: String,
     type: String,
@@ -45,7 +47,7 @@ app.post('/api/fileanalyse', upload.single('upfile'), async (req, res) => {
   const fileData = new File({
     name: originalname,
     type: mimetype,
-    size: size
+    size
   });
 
   await fileData.save();
@@ -53,7 +55,7 @@ app.post('/api/fileanalyse', upload.single('upfile'), async (req, res) => {
   res.json({
     name: originalname,
     type: mimetype,
-    size: size
+    size
   });
 });
 
