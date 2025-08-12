@@ -45,7 +45,7 @@ app.post('/api/fileanalyse', upload.single('upfile'), async (req, res) => {
   const fileData = new File({
     name: originalname,
     type: mimetype,
-    size
+    size: size
   });
 
   await fileData.save();
@@ -53,7 +53,7 @@ app.post('/api/fileanalyse', upload.single('upfile'), async (req, res) => {
   res.json({
     name: originalname,
     type: mimetype,
-    size
+    size: size
   });
 });
 
